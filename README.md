@@ -1,8 +1,26 @@
-# rust-state-poc
-Rust State Management Proof of Concept
+# Rust State Management Proof of Concept
 - Want to save state for Mission Info JSON
   - Be able to perform CRUD Operations
 
+# Installation Instructions
+1. Install Node.JS dependencies with your package manager of choice
+```bash
+npm install
+bun install
+pnpm install
+```
+
+2. Run tauri dev
+```bash
+npm run tauri dev
+bun run tauri dev
+pnpm run tauri dev
+```
+### Important Note: NEVER build the Rust codebase under the `src-tauri` directory using the command `cargo build`. This WILL cause problems!
+
+
+
+## Mission Info JSON
 ```json
 {
     "missionName": "Search Area Time",
