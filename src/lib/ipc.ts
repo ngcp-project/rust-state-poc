@@ -1,0 +1,1 @@
+export { createTauRPCProxy } from './bindings'

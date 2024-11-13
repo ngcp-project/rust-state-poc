@@ -1,82 +1,73 @@
-<script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Count from "./components/Count.vue";
-
-</script>
-
 <template>
   <div class="container">
-    <h1>Welcome to Tauri!</h1>
+    Set managed state on backend <input type="text" v-model="value" />
+    <button @click="callBackend">Call Backend code</button>
 
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <Count/>
+    <br />
+    Current State (uppercase): {{ state }}
   </div>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
+<script lang="ts">
+import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
+import { createTauRPCProxy } from "./lib/ipc";
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
-}
+export default defineComponent({
+  setup() {
+    const value = ref("");
+    const state = ref("");
+    let unlisten: Array<() => void> = [];
+    let taurpc: Awaited<ReturnType<typeof createTauRPCProxy>>;
 
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
+    const callBackend = async () => {
+      await taurpc.update_state(value.value);
+      await taurpc.get_window();
+      await taurpc.method_with_alias();
+      await taurpc.multiple_args([], "test");
+      await taurpc.get_app_handle();
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+      try {
+        const res = await taurpc.test_result({
+          welcome_message: "test message",
+          count: 10
+        });
+        console.log({ res });
+      } catch (error) {
+        console.error({ error });
+        // Handle error
+      }
+    };
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
+    onMounted(async () => {
+      taurpc = await createTauRPCProxy();
+      unlisten.push(
+        taurpc.events.vec_test.on((new_state) => {
+          console.log("state updated", new_state);
+        })
+      );
+      unlisten.push(
+        taurpc.events.state_changed.on((val) => {
+          state.value = val;
+        })
+      );
+      unlisten.push(
+        taurpc.events.multiple_args.on((arg1, arg2) => {
+          console.log(arg1, arg2);
+        })
+      );
+    });
 
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  gap: 1rem
-}
+    onBeforeUnmount(() => {
+      unlisten.forEach((fn) => fn());
+    });
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
+    return {
+      value,
+      state,
+      callBackend
+    };
+  }
+});
+</script>
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-
-</style>
+<style scoped></style>
