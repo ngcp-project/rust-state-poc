@@ -10,7 +10,7 @@ use tokio::{ sync::{ oneshot, Mutex }, time::sleep };
 #[taurpc::ipc_type]
 // #[derive(serde::Serialize, serde::Deserialize, specta::Type, Clone)]
 struct AppData {
-  welcome_message: String,
+  state: String,
   count: i32,
 }
 
@@ -56,11 +56,17 @@ trait Api {
   async fn vec_test(arg: Vec<String>);
 
   async fn multiple_args(arg: Vec<String>, arg2: String);
+
+  async fn increase_count(app_handle: AppHandle<tauri::Wry>);
+
+  // return api data { state: string, count: i32 }
+  async fn get_app_data() -> AppData;
 }
 
 #[derive(Clone)]
 struct ApiImpl {
   state: GlobalState,
+  count: Arc<Mutex<i32>>,
 }
 
 #[taurpc::resolvers]
@@ -94,8 +100,8 @@ impl Api for ApiImpl {
   }
 
   async fn test_result(self, user: AppData) -> Result<AppData, Error> {
-    Err(Error::Other("Some error message".to_string()))
-    // Ok(user)
+    // Err(Error::Other("Some error message".to_string()))
+    Ok(user)
   }
 
   async fn with_sleep(self) {
@@ -109,6 +115,25 @@ impl Api for ApiImpl {
   async fn vec_test(self, arg: Vec<String>) {}
 
   async fn multiple_args(self, arg: Vec<String>, arg2: String) {}
+
+  async fn increase_count(self, app_handle: AppHandle<tauri::Wry>) {
+    let mut count = self.count.lock().await;
+    *count += 1;
+    println!("Count increased: {}", *count);
+    TauRpcEventsEventTrigger::new(app_handle)
+      .data_changed(AppData {
+        state: self.state.lock().await.clone(),
+        count: *count,
+      })
+      .unwrap();
+  }
+
+  async fn get_app_data(self) -> AppData {
+    AppData {
+      state: self.state.lock().await.clone(),
+      count: *self.count.lock().await,
+    }
+  }
 }
 
 #[taurpc::procedures(path = "events", export_to = "../src/lib/bindings.ts")]
@@ -118,6 +143,10 @@ trait Events {
 
   #[taurpc(event)]
   async fn state_changed(new_state: String);
+
+  // partial of AppData
+  #[taurpc(event)]
+  async fn data_changed(new_data: AppData);
 
   #[taurpc(event)]
   async fn vec_test(args: Vec<String>);
@@ -188,6 +217,7 @@ async fn main() {
     .merge(
       (ApiImpl {
         state: Arc::new(Mutex::new("state".to_string())),
+        count: Arc::new(Mutex::new(0)),
       }).into_handler()
     )
     .merge(EventsImpl.into_handler())
