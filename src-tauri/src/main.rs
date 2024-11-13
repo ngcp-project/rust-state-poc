@@ -6,7 +6,6 @@ use tauri::{ AppHandle, Manager, Runtime };
 use taurpc::{ Router, Windows };
 use tokio::{ sync::{ oneshot, Mutex }, time::sleep };
 
-#[doc = "Doc comments are also generated"]
 #[taurpc::ipc_type]
 // #[derive(serde::Serialize, serde::Deserialize, specta::Type, Clone)]
 struct AppData {
