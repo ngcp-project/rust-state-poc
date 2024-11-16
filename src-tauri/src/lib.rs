@@ -5,6 +5,9 @@ struct AppData {
   welcome_message: String,
   count: i32,
 }
+struct TelemetryData {
+    
+}
 
 #[derive(Clone, serde::Serialize)]
 struct MessagePayload {
@@ -15,6 +18,7 @@ struct MessagePayload {
 struct CountPayload {
   count: i32,
 }
+
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -52,7 +56,6 @@ fn set_count(count: i32, app_data: State<Mutex<AppData>>, window: Window) -> i32
   window.app_handle().emit("count_changed", CountPayload { count }).unwrap();
   count
 }
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   Builder::default()
