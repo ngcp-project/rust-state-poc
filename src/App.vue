@@ -1,24 +1,22 @@
 <template>
   <div class="container">
-    Count: {{ count }}
+    <div>
+      <SharedCount />
+    </div>
 
-    <button @click="increaseCount">Increase count</button>
+    <div>
+      <LocalCount />
+    </div>
+
+    <!-- <GenericCount /> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { getState, subscribe } from "./lib/zustand/count";
+import SharedCount from './components/SharedCount.vue';
+import LocalCount from './components/LocalCount.vue';
+// import GenericCount from './components/GenericCount.vue';
 
-const count = ref(getState().count);
-
-const increaseCount = () => {
-  getState().increaseCount();
-};
-
-subscribe(() => {
-  count.value = getState().count;
-});
 </script>
 
 <style scoped></style>
