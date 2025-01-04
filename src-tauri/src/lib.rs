@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use tokio::sync::Mutex;
 use tauri::{Builder, State, Window};
 use tokio::time::{Duration, interval};
