@@ -14,19 +14,13 @@ struct AppData {
     telemetry: TelemetryData,
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
-struct TelemetryData {
-    localIP: String,
-    pitch: f32,
-    yaw: f32,
-    roll: f32,
-    speed: f32,
-    altitude: f32,
-    batteryLife: f32,
-    currentPosition: Coordinate,
-    lastUpdated: chrono::DateTime<chrono::Utc>,
-    fireFound: bool,
-    fireCoordinate: Coordinate,
+
+#[derive(Clone, serde::Serialize. serde::Deserialize)]
+struct VehicleData{
+    vehicleName: String,
+    isManual: bool,
+    target: Coordinate,
+    searchArea: Coordinate
 }
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
