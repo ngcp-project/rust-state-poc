@@ -7,7 +7,7 @@ const greetMsg = ref("");
 const name = ref("");
 
 async function getWelcomeMessage() {
-  console.log("getting welcome message")
+  console.log("getting welcome message");
   greetMsg.value = await invoke("get_welcome_message");
 }
 
@@ -21,7 +21,6 @@ onMounted(async () => {
   await listen("welcome_message_changed", (event: any) => {
     greetMsg.value = event.payload.welcome_message;
   });
-
 });
 </script>
 
