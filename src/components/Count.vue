@@ -60,14 +60,8 @@ async function setTelemetry(newTelemetry: any) {
 
 // get most recent stage
 async function getMostRecentStage() {
-  mostRecentStage.value = Object.assign({}, defaultMostRecentStage, await invoke("get_most_recent_stage"));
+  mostRecentStage.value = Object.assign({}, defaultMostRecentStage, await invoke("set_most_recent_stage"));
   console.log("most recent stage value:", mostRecentStage.value);
-}
-
-// set most recent stage
-async function setMostRecentStage(newMostRecentStage: any) {
-  console.log("setMostRecentStage called", newMostRecentStage);
-  await invoke("set_most_recent_stage", { mostRecentStage: newMostRecentStage });
 }
 
 // Listen for telemetry (and other) updates from the backend

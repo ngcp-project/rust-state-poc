@@ -81,7 +81,7 @@ async fn get_telemetry(
 }
 
 #[tauri::command]
-async fn get_most_recent_stage(
+async fn set_most_recent_stage(
   app_data: State<'_, Arc<Mutex<AppData>>>,
   window: Window
 ) -> Result<(), String> {
@@ -142,7 +142,7 @@ pub fn run() {
       );
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![get_telemetry, get_most_recent_stage])
+    .invoke_handler(tauri::generate_handler![get_telemetry, set_most_recent_stage])
     .run(tauri::generate_context!())
     .expect("error while running Tauri application");
 }
