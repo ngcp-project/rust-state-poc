@@ -11,7 +11,7 @@ use chrono::Utc;
 struct AppData {
     welcome_message: String,
     count: i32,
-    stages: Vec<String>,
+    mostRecentStage: StageData,
     telemetry: TelemetryData,
 }
 
@@ -34,6 +34,13 @@ struct TelemetryData {
 struct Coordinate {
     latitude: f32,
     longitude: f32,
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+struct StageData {
+    stageId: i32,
+    stageName: String,
+    vehicleName: String,
 }
 
 #[tauri::command]
@@ -71,9 +78,30 @@ async fn get_telemetry(app_data: State<'_, Arc<Mutex<AppData>>>, window: Window)
 }
 
 #[tauri::command]
-fn get_most_recent_stage(app_data: State<Mutex<AppData>>) -> Option<String> {
-    let data = app_data.lock().unwrap();
-    data.stages.last().cloned()
+async fn get_most_recent_stage(app_data: State<'_, Arc<Mutex<AppData>>>, window: Window) -> Result<(), String> {
+  
+    let mut interval = interval(Duration::from_secs(5));
+    let app_data = app_data.inner().clone();
+
+    tokio::spawn(async move {
+        loop {
+            interval.tick().await;
+            
+            let mut data = app_data.lock().await;
+            
+            // get the most recent stage values
+            data.mostRecentStage.stageId += 1; // change this to just update with whatever new stage is made (will also have to remove out of loop)
+            data.mostRecentStage.stageName = format!("Stage {}", &data.mostRecentStage.stageId);
+            data.mostRecentStage.vehicleName = "FRA".to_string();
+            
+            // Emit updated telemetry to frontend
+            if let Err(e) = window.emit("most_recent_stage_update", &data.mostRecentStage) {
+                eprintln!("Failed to emit most_recent_stage_update: {}", e);
+            }
+        }
+    });
+
+    Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -83,6 +111,11 @@ pub fn run() {
             app.manage(Arc::new(Mutex::new(AppData {
                 welcome_message: "Welcome!".to_string(),
                 count: 0,
+                mostRecentStage: StageData {
+                    stageId: 1,
+                    stageName: "Stage 1".to_string(),
+                    vehicleName: "ERU".to_string(),
+                },
                 telemetry: TelemetryData {
                     localIP: "192.168.1.1".to_string(),
                     pitch: 0.0,
@@ -105,7 +138,7 @@ pub fn run() {
             })));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_telemetry])
+        .invoke_handler(tauri::generate_handler![get_telemetry, get_most_recent_stage])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
-}
+} 

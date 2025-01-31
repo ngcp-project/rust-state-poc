@@ -22,6 +22,14 @@ const defaultTelemetry = {
 };
 const telemetry = ref({ ...defaultTelemetry });
 
+// var for most recent stage
+const defaultMostRecentStage = {
+  stageId: 0,
+  stageName: "stage 1",
+  vehicleName: "ERU",
+};
+const mostRecentStage = ref({ ...defaultMostRecentStage });
+
 // Function to get the count from the backend
 // async function getCount() {
 //   count.value = await invoke("get_count");
@@ -50,15 +58,36 @@ async function setTelemetry(newTelemetry: any) {
   await invoke("set_telemetry", { telemetry: newTelemetry });
 }
 
-// Listen for telemetry updates from the backend
+// get most recent stage
+async function getMostRecentStage() {
+  mostRecentStage.value = Object.assign({}, defaultMostRecentStage, await invoke("get_most_recent_stage"));
+  console.log("most recent stage value:", mostRecentStage.value);
+}
+
+// set most recent stage
+async function setMostRecentStage(newMostRecentStage: any) {
+  console.log("setMostRecentStage called", newMostRecentStage);
+  await invoke("set_most_recent_stage", { mostRecentStage: newMostRecentStage });
+}
+
+// Listen for telemetry (and other) updates from the backend
 onMounted(async () => {
   // await getCount(); // Get initial count
   await getTelemetry(); // Get initial telemetry data
+  await getMostRecentStage(); // Get initial most recent stage
 
   // Listen for count_changed events and update count
   // await listen("count_changed", (event: any) => {
   //   count.value = event.payload.count;
   // });
+
+  await listen("most_recent_stage_update", (event: any) => {
+    console.log("Received stage update", event.payload);
+    mostRecentStage.value.stageId = event.payload.stageId;
+    mostRecentStage.value.stageName = event.payload.stageName;
+    mostRecentStage.value.vehicleName = event.payload.vehicleName;
+    
+  });
 
   // Listen for telemetry_changed events and update telemetry data
   await listen("telemetry_update", (event: any) => {
@@ -85,6 +114,11 @@ onMounted(async () => {
 
 <template>
   <div>
+    <h3>Most Recent Stage:</h3>
+    <p><strong>Stage ID:</strong> {{ mostRecentStage.stageId }}</p>
+    <p><strong>Stage Name:</strong> {{ mostRecentStage.stageName }}</p>
+    <p><strong>Vehicle Name:</strong> {{ mostRecentStage.vehicleName }}</p>
+
     <h3>Telemetry Data:</h3>
     <p><strong>Local IP:</strong> {{ telemetry.localIP }}</p>
     <p><strong>Pitch:</strong> {{ telemetry.pitch }}</p>
