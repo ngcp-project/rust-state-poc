@@ -25,8 +25,8 @@ const telemetry = ref({ ...defaultTelemetry });
 // var for most recent stage
 const defaultMostRecentStage = {
   stageId: 0,
-  stageName: "stage 1",
-  vehicleName: "ERU",
+  stageName: "",
+  vehicleName: "",
 };
 const mostRecentStage = ref({ ...defaultMostRecentStage });
 
@@ -74,8 +74,7 @@ async function setMostRecentStage(newMostRecentStage: any) {
 onMounted(async () => {
   // await getCount(); // Get initial count
   await getTelemetry(); // Get initial telemetry data
-  await getMostRecentStage(); // Get initial most recent stage
-
+  
   // Listen for count_changed events and update count
   // await listen("count_changed", (event: any) => {
   //   count.value = event.payload.count;
@@ -118,6 +117,7 @@ onMounted(async () => {
     <p><strong>Stage ID:</strong> {{ mostRecentStage.stageId }}</p>
     <p><strong>Stage Name:</strong> {{ mostRecentStage.stageName }}</p>
     <p><strong>Vehicle Name:</strong> {{ mostRecentStage.vehicleName }}</p>
+    <button @click="getMostRecentStage">Add New Stage</button> 
 
     <h3>Telemetry Data:</h3>
     <p><strong>Local IP:</strong> {{ telemetry.localIP }}</p>
