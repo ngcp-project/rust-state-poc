@@ -22,6 +22,19 @@ const defaultTelemetry = {
 };
 const telemetry = ref({ ...defaultTelemetry });
 
+enum Status {
+  Active = "Active",
+  Inactive = "Inactive",
+  Complete = "Complete",
+  Failed = "Failed"
+}
+
+const testMission = {
+  missionName: "test mission weeeeee",
+  status: Status.Active,
+}
+const missionToMake = ref({ ...testMission });
+
 // Function to get the count from the backend
 // async function getCount() {
 //   count.value = await invoke("get_count");
@@ -48,6 +61,12 @@ async function getTelemetry() {
 async function setTelemetry(newTelemetry: any) {
   console.log("setTelemetry called", newTelemetry);
   await invoke("set_telemetry", { telemetry: newTelemetry });
+}
+
+// Function to create mission
+async function createMission(mission:any) {
+  console.log("HOLY MOLY CANOLY (this is the mission being created): ", mission);
+  return await invoke("create_mission", { mission: mission });
 }
 
 // Listen for telemetry updates from the backend
@@ -85,6 +104,11 @@ onMounted(async () => {
 
 <template>
   <div>
+
+    <h3>Mission:</h3>
+    <p><strong>Mission:</strong> {{ missionToMake }}</p>
+    <button @click="createMission(missionToMake)">Add New Mission</button> 
+
     <h3>Telemetry Data:</h3>
     <p><strong>Local IP:</strong> {{ telemetry.localIP }}</p>
     <p><strong>Pitch:</strong> {{ telemetry.pitch }}</p>
