@@ -78,19 +78,19 @@ impl AppData {
     }
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Coordinate {
     latitude: f32,
     longitude: f32,
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Mission {
     mission_name: String,
     status: String,
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Stage {
     stage_id: i32, // Primary key
     stage_name: String,
@@ -98,7 +98,7 @@ struct Stage {
     zones: Zones,
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Vehicle {
     vehicle_name: String, 
     mission_name: String,
@@ -106,7 +106,7 @@ struct Vehicle {
     stages: Vec<Stage>, // All stages available for this vehicle
 }
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Zones {
     keep_in_zone: Vec<Coordinate>,
     keep_out_zone: Vec<Coordinate>,
@@ -126,9 +126,12 @@ async fn get_vehicle_data(
 
     // Since there's only one vehicle, directly compare its name
     if data.vehicle.vehicle_name == vehicle_name {
+        println!("Vehicle: {:?}", data.vehicle); // Debugging statement
         return Ok(serde_json::json!(data.vehicle));
     } else {
+        println!("Vehicle '{}' not found", vehicle_name); // Debugging statement
         return Err(format!("Vehicle '{}' not found", vehicle_name));
+    
     }
 }
 
