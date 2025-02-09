@@ -2,16 +2,17 @@
 import { ref, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 
-const vehicleData = ref(null);
+const vehicleName = ref("Vehicle 1");
+const vehicleData = ref("");
 const error = ref(null);
 
 const fetchVehicleData = async () => {
   try {
     console.log("Invoking get_vehicle_data with vehicle_name: 'Vehicle 1'"); // Debugging statement
-    vehicleData.value = await invoke("get_vehicle_data", { vehicle_name: "Vehicle 1" }); // Corrected key
+    vehicleData.value = await invoke("get_vehicle_data", { vehicle_name: vehicleName.value }); // Corrected key
     console.log("Fetched vehicle data:", vehicleData.value);
   } catch (err) {
-    error.value = err.message || "An unknown error occurred";
+    error.value = err.message;
     console.error("Error fetching vehicle data:", err);
   }
 };
