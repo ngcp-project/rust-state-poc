@@ -7,10 +7,20 @@ const vehicleData = ref("");
 
 const fetchVehicleData = async () => {
   try {
-    vehicleData.value = await invoke("get_vehicle_data", { vehicle_name: vehicleName.value });
+    console.log("Sending request with:", { request: { vehicleName: vehicleName.value } });
+
+    vehicleData.value = await invoke("get_vehicle_data", {
+      request: {
+        vehicleName: vehicleName.value
+      }
+    });
+
     console.log("Vehicle Data:", vehicleData.value);
   } catch (error) {
-    console.error("Error fetching vehicle data:", error);
+    console.error("Error details:", {
+      message: error.message,
+      error: error
+    });
   }
 };
 </script>
@@ -18,6 +28,6 @@ const fetchVehicleData = async () => {
 <template>
   <div>
     <button @click="fetchVehicleData">Get Vehicle Data</button>
-    <p>Result: {{ vehicleData }}</p>
+    <p>Result: {{ JSON.stringify(vehicleData) }}</p>
   </div>
 </template>

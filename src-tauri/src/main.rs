@@ -4,7 +4,7 @@ use tauri::{Manager, Builder};
 use tokio::sync::Mutex;
 use std::sync::Arc;
 use serde_json::Value;
-
+use serde::{Serialize, Deserialize};  // 
 // The top-level application data contains vehicles, missions, and (optionally) a stages array.
 struct AppData {
     vehicle: Vehicle,
@@ -115,26 +115,29 @@ struct Zones {
     stage_id: i32,
 }
 
+#[derive(Debug, Deserialize)]
+struct VehicleRequest {
+    #[serde(rename = "vehicleName")]
+    vehicle_name: String,
+}
+
 #[tauri::command]
 async fn get_vehicle_data(
     app_data: tauri::State<'_, Arc<Mutex<AppData>>>,
-    vehicle_name: String
+    request: VehicleRequest
 ) -> Result<Value, String> {
-    println!("Received request for vehicle_name: {}", vehicle_name); // Debugging statement
+    println!("Received request for vehicle_name: {}", request.vehicle_name);
 
     let data = app_data.lock().await;
 
-    // Since there's only one vehicle, directly compare its name
-    if data.vehicle.vehicle_name == vehicle_name {
-        println!("Vehicle: {:?}", data.vehicle); // Debugging statement
+    if data.vehicle.vehicle_name == request.vehicle_name {
+        println!("Vehicle: {:?}", data.vehicle);
         return Ok(serde_json::json!(data.vehicle));
     } else {
-        println!("Vehicle '{}' not found", vehicle_name); // Debugging statement
-        return Err(format!("Vehicle '{}' not found", vehicle_name));
-    
+        println!("Vehicle '{}' not found", request.vehicle_name);
+        return Err(format!("Vehicle '{}' not found", request.vehicle_name));
     }
 }
-
 fn main() {
     tauri::Builder::default()
         .manage(Arc::new(Mutex::new(AppData::new())))
