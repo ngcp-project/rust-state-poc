@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev"
   },
   "dependencies": {
-    "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/plugin-shell": ">=2.0.0-rc.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
