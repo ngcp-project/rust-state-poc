@@ -23,7 +23,7 @@ import Stage from "./components/Stage.vue";
 
     <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
 
-    <!-- <Count /> -->
+    <Count />
     <Stage />
   </div>
 </template>
