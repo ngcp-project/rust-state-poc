@@ -9,7 +9,6 @@ use std::sync::Arc;
 use chrono::Utc;
 
 mod commands {
-    pub mod testcmd;
     pub mod stages;
 }
 struct AppData {
@@ -102,7 +101,7 @@ pub fn run() {
             })));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_telemetry, commands::testcmd::test_cmd, commands::stages::transition_next_stage])
+        .invoke_handler(tauri::generate_handler![get_telemetry, commands::stages::transition_next_stage])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
 }
