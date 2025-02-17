@@ -7,7 +7,9 @@
     <div>
       <LocalCount />
     </div>
-
+    <div>
+      <Form/>
+    </div>
     <!-- <GenericCount /> -->
   </div>
 </template>
@@ -15,7 +17,7 @@
 <script lang="ts" setup>
 import SharedCount from './components/SharedCount.vue';
 import LocalCount from './components/LocalCount.vue';
-// import GenericCount from './components/GenericCount.vue';
+import Form from './components/Form.vue';
 
 </script>
 

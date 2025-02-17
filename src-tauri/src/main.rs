@@ -7,6 +7,7 @@ mod error;
 mod stores;
 
 use stores::counter::{CounterApiImpl, CounterApi};
+use stores::form::api::{FormApiImpl, FormApi};
 
 
 fn setup_router() -> Router {
@@ -15,8 +16,10 @@ fn setup_router() -> Router {
     // use CounterApiImpl::new(initial_count) to set initial count
     // else use CounterApiImpl::default() to set initial count to 0
     let counter_api = CounterApiImpl::default(); 
+    let form_api = FormApiImpl::default();
     
     Router::new()
+        .merge(form_api.into_handler())
         .merge(counter_api.into_handler()
     )
 }
