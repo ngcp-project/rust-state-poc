@@ -8,6 +8,9 @@ use rand::{ Rng, SeedableRng, rngs::StdRng };
 use std::sync::Arc;
 use chrono::Utc;
 
+mod commands {
+    pub mod stages;
+}
 struct AppData {
   welcome_message: String,
   count: i32,
@@ -142,7 +145,7 @@ pub fn run() {
       );
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![get_telemetry, set_most_recent_stage])
+    .invoke_handler(tauri::generate_handler![get_telemetry, set_most_recent_stage, commands::stages::transition_next_stage])
     .run(tauri::generate_context!())
     .expect("error while running Tauri application");
 }

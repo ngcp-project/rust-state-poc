@@ -2,7 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Count from "./components/Count.vue";
-
+import Stage from "./components/Stage.vue";
 </script>
 
 <template>
@@ -23,7 +23,8 @@ import Count from "./components/Count.vue";
 
     <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
 
-    <Count/>
+    <Count />
+    <Stage />
   </div>
 </template>
 
@@ -59,7 +60,7 @@ import Count from "./components/Count.vue";
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  gap: 1rem
+  gap: 1rem;
 }
 
 .logo {
@@ -77,6 +78,4 @@ import Count from "./components/Count.vue";
   display: flex;
   justify-content: center;
 }
-
-
 </style>
