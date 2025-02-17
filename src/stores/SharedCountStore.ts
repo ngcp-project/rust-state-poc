@@ -1,18 +1,21 @@
 import { createStore } from "zustand/vanilla";
-import { createTauRPCProxy } from "../lib/bindings";
+import { CounterStore, createTauRPCProxy } from "../lib/bindings";
 
-// Define Zustand Store types
-interface CountState {
-  count: number;
-  increaseCount: () => void;
-}
 
 // Create taurpc proxy
 const taurpc = await createTauRPCProxy();
 
+// Define Zustand Store types
+interface CountState extends CounterStore {
+  increaseCount: () => void;
+}
+
+
+const initialState: CounterStore = await taurpc.counter.get_default_data();
+
 const useSharedCountStore = createStore<CountState>(() => ({
   // Initial State
-  count: 0,
+  ...initialState,
   // State Method
   // Use async functions for taurpc calls
   increaseCount: async () => {
@@ -27,14 +30,14 @@ export const { getState, setState, subscribe } = useSharedCountStore;
 export default useSharedCountStore;
 
 // Initialize count with taurpc.get_app_data
-taurpc.counter.get_data().then((data: { count: number }) => {
-  setState({ count: data.count });
+taurpc.counter.get_data().then((data: CounterStore) => {
+  setState({...data});
 });
 
 // Update count when taurpc.events.data_changed is triggered
-taurpc.counter.on_updated.on((new_data: { count: number }) => {
+taurpc.counter.on_updated.on((new_data: CounterStore) => {
   console.log("app data updated", new_data);
-  useSharedCountStore.setState({ count: new_data.count });
+  useSharedCountStore.setState({...new_data});
 });
 
 

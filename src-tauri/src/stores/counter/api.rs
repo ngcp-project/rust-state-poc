@@ -65,6 +65,7 @@ pub trait CounterApi {
     async fn increase(app_handle: AppHandle<Wry>) -> Result<(), String>;
 
     async fn get_data() -> CounterStore;
+    async fn get_default_data() -> CounterStore;
     #[taurpc(event)] // Define the on_updated method as an event for frontend to listen to
     async fn on_updated(new_data: CounterStore);
 }
@@ -80,7 +81,9 @@ impl CounterApi for CounterApiImpl {
             println!("Count increased: {}", state.count);
         }).await
     }
-
+    async fn get_default_data(self) -> CounterStore {
+        Self::default().state.lock().await.clone()
+    }
     // Get the current state of the counter
     async fn get_data(self) -> CounterStore {
         self.state.lock().await.clone()
