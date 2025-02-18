@@ -11,7 +11,7 @@ use chrono::Utc;
 mod commands {
     pub mod stages;
 }
-pub struct AppData {
+struct AppData {
   welcome_message: String,
   count: i32,
   mostRecentStage: StageData,

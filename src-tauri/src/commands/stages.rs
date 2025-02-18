@@ -3,16 +3,7 @@ use tauri::{ window, Builder, State, Window };
 use std::sync::Arc;
 use tauri::Emitter;
 
-pub struct AppData {
-  mostRecentStage: StageData,
-}
-
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
-struct StageData {
-  stageId: i32,
-  stageName: String,
-  vehicleName: String,
-}
+use crate::AppData;
 
 #[tauri::command]
 pub async fn transition_next_stage() {
