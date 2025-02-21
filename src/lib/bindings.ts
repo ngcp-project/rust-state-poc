@@ -14,7 +14,7 @@ export type TauRpcFormApiInputTypes = { proc_name: "next_step"; input_type: null
 
 export type TauRpcFormApiOutputTypes = { proc_name: "next_step"; output_type: null } | { proc_name: "previous_step"; output_type: null } | { proc_name: "reset"; output_type: null } | { proc_name: "update_form"; output_type: null } | { proc_name: "submit_form"; output_type: null } | { proc_name: "get_default_data"; output_type: FormStateStruct } | { proc_name: "get_data"; output_type: FormStateStruct } | { proc_name: "on_updated"; output_type: null }
 
-const ARGS_MAP = {"form":"{\"on_updated\":[\"new_data\"],\"reset\":[],\"update_form\":[\"form_data\"],\"get_data\":[],\"get_default_data\":[],\"previous_step\":[],\"next_step\":[],\"submit_form\":[]}","counter":"{\"increase\":[],\"get_default_data\":[],\"on_updated\":[\"new_data\"],\"get_data\":[]}"}
+const ARGS_MAP = {"form":"{\"get_data\":[],\"next_step\":[],\"reset\":[],\"submit_form\":[],\"previous_step\":[],\"on_updated\":[\"new_data\"],\"update_form\":[\"form_data\"],\"get_default_data\":[]}","counter":"{\"on_updated\":[\"new_data\"],\"get_default_data\":[],\"increase\":[],\"get_data\":[]}"}
 import { createTauRPCProxy as createProxy } from "taurpc"
 
 export const createTauRPCProxy = () => createProxy<Router>(ARGS_MAP)
