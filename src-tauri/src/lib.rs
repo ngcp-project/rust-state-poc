@@ -8,10 +8,10 @@ use rand::{ Rng, SeedableRng, rngs::StdRng };
 use std::iter::Enumerate;
 use std::sync::Arc;
 use chrono::Utc;
-
 mod commands {
     pub mod stages;
 }
+
 struct AppData {
   welcome_message: String,
   count: i32,

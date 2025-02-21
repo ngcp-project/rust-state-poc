@@ -20,9 +20,15 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.6
         version: 0.6.6(prettier@3.3.3)
+      taurpc:
+        specifier: ^1.6.0
+        version: 1.6.0
       vue:
         specifier: ^3.3.4
         version: 3.4.38(typescript@5.5.4)
+      zustand:
+        specifier: ^5.0.1
+        version: 5.0.1
     devDependencies:
       '@tauri-apps/cli':
         specifier: '>=2.0.0-rc.0'
@@ -282,6 +288,9 @@ packages:
 
   '@tauri-apps/api@2.0.0-rc.4':
     resolution: {integrity: sha512-UNiIhhKG08j4ooss2oEEVexffmWkgkYlC2M3GcX3VPtNsqFgVNL8Mcw/4Y7rO9M9S+ffAMnLOF5ypzyuyb8tyg==}
+
+  '@tauri-apps/api@2.1.1':
+    resolution: {integrity: sha512-fzUfFFKo4lknXGJq8qrCidkUcKcH2UHhfaaCNt4GzgzGaW2iS26uFOg4tS3H4P8D6ZEeUxtiD5z0nwFF0UN30A==}
 
   '@tauri-apps/cli-darwin-arm64@2.0.0-rc.10':
     resolution: {integrity: sha512-oAuG3n/dIqK5ZedknF1QOgVDlpEepAaaIFHpUi+eIdG1MFp82jgyHqplveVZ95F16j7RhjIMaEhiTF6cGR/baA==}
@@ -545,6 +554,9 @@ packages:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
 
+  taurpc@1.6.0:
+    resolution: {integrity: sha512-RXHzIirFSfuMRzRu5sEOyhJgnZmNsT8a0pTqJlT0OUvlZwFOpijUdTpuhEf3RyiC18LYwX7PwPicWUsJ0RKClA==}
+
   to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
@@ -600,6 +612,24 @@ packages:
       typescript: '*'
     peerDependenciesMeta:
       typescript:
+        optional: true
+
+  zustand@5.0.1:
+    resolution: {integrity: sha512-pRET7Lao2z+n5R/HduXMio35TncTlSW68WsYBq2Lg1ASspsNGjpwLAsij3RpouyV6+kHMwwwzP0bZPD70/Jx/w==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
         optional: true
 
 snapshots:
@@ -738,6 +768,8 @@ snapshots:
     optional: true
 
   '@tauri-apps/api@2.0.0-rc.4': {}
+
+  '@tauri-apps/api@2.1.1': {}
 
   '@tauri-apps/cli-darwin-arm64@2.0.0-rc.10':
     optional: true
@@ -978,6 +1010,10 @@ snapshots:
 
   source-map-js@1.2.0: {}
 
+  taurpc@1.6.0:
+    dependencies:
+      '@tauri-apps/api': 2.1.1
+
   to-fast-properties@2.0.0: {}
 
   typescript@5.5.4: {}
@@ -1008,3 +1044,5 @@ snapshots:
       '@vue/shared': 3.4.38
     optionalDependencies:
       typescript: 5.5.4
+
+  zustand@5.0.1: {}
