@@ -9,11 +9,22 @@ use std::iter::Enumerate;
 use std::sync::Arc;
 use chrono::Utc;
 
+mod commands {
+    pub mod stages;
+}
 struct AppData {
   welcome_message: String,
   count: i32,
+  mostRecentStage: StageData, 
   telemetry: TelemetryData,
   mission: Mission,
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+struct StageData {
+  stageId: i32,
+  stageName: String,
+  vehicleName: String,
 }
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -88,6 +99,30 @@ async fn get_telemetry(
   Ok(())
 }
 
+// #[tauri::command]
+// async fn set_most_recent_stage(
+//   app_data: State<'_, Arc<Mutex<AppData>>>,
+//   window: Window
+// ) -> Result<(), String> {
+//   let app_data = app_data.inner().clone();
+
+//   tokio::spawn(async move {
+//     let mut data = app_data.lock().await;
+
+//     // get the most recent stage values
+//     data.mostRecentStage.stageId += 1; // change this to just update with whatever new stage is made (will also have to remove out of loop)
+//     data.mostRecentStage.stageName = format!("Stage {}", &data.mostRecentStage.stageId);
+//     data.mostRecentStage.vehicleName = "FRA".to_string();
+
+//     // Emit updated telemetry to frontend
+//     if let Err(e) = window.emit("most_recent_stage_update", &data.mostRecentStage) {
+//       eprintln!("Failed to emit most_recent_stage_update: {}", e);
+//     }
+//   });
+
+//   Ok(())
+// }
+
 #[tauri::command]
 async fn create_mission(
   app_data: State<'_, Arc<Mutex<AppData>>>,
@@ -123,6 +158,11 @@ pub fn run() {
           Mutex::new(AppData {
             welcome_message: "Welcome!".to_string(),
             count: 0,
+            mostRecentStage: StageData {
+              stageId: 0,
+              stageName: "".to_string(),
+              vehicleName: "".to_string(),
+            },
             telemetry: TelemetryData {
               localIP: "192.168.1.1".to_string(),
               pitch: 0.0,
@@ -151,7 +191,7 @@ pub fn run() {
       );
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![get_telemetry, create_mission])
+    .invoke_handler(tauri::generate_handler![get_telemetry, commands::stages::set_most_recent_stage, commands::stages::transition_next_stage])
     .run(tauri::generate_context!())
     .expect("error while running Tauri application");
 }

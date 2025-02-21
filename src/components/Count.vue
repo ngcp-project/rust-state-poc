@@ -35,6 +35,14 @@ const testMission = {
 }
 const missionToMake = ref({ ...testMission });
 
+// var for most recent stage
+const defaultMostRecentStage = {
+  stageId: 0,
+  stageName: "",
+  vehicleName: "",
+};
+const mostRecentStage = ref({ ...defaultMostRecentStage });
+
 // Function to get the count from the backend
 // async function getCount() {
 //   count.value = await invoke("get_count");
@@ -69,15 +77,29 @@ async function createMission(mission:any) {
   return await invoke("create_mission", { mission: mission });
 }
 
-// Listen for telemetry updates from the backend
+// get most recent stage
+async function getMostRecentStage() {
+  mostRecentStage.value = await Object.assign(await invoke("set_most_recent_stage"));
+  console.log("most recent stage value:", mostRecentStage.value);
+}
+
+// Listen for telemetry (and other) updates from the backend
 onMounted(async () => {
   // await getCount(); // Get initial count
   await getTelemetry(); // Get initial telemetry data
-
+  
   // Listen for count_changed events and update count
   // await listen("count_changed", (event: any) => {
   //   count.value = event.payload.count;
   // });
+
+  await listen("most_recent_stage_update", (event: any) => {
+    console.log("Received stage update", event.payload);
+    mostRecentStage.value.stageId = event.payload.stageId;
+    mostRecentStage.value.stageName = event.payload.stageName;
+    mostRecentStage.value.vehicleName = event.payload.vehicleName;
+    
+  });
 
   // Listen for telemetry_changed events and update telemetry data
   await listen("telemetry_update", (event: any) => {
@@ -108,6 +130,12 @@ onMounted(async () => {
     <h3>Mission:</h3>
     <p><strong>Mission:</strong> {{ missionToMake }}</p>
     <button @click="createMission(missionToMake)">Add New Mission</button> 
+
+    <h3>Most Recent Stage:</h3>
+    <p><strong>Stage ID:</strong> {{ mostRecentStage.stageId }}</p>
+    <p><strong>Stage Name:</strong> {{ mostRecentStage.stageName }}</p>
+    <p><strong>Vehicle Name:</strong> {{ mostRecentStage.vehicleName }}</p>
+    <button @click="getMostRecentStage">Add New Stage</button> 
 
     <h3>Telemetry Data:</h3>
     <p><strong>Local IP:</strong> {{ telemetry.localIP }}</p>
