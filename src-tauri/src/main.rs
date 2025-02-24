@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use stores::mission;
 use taurpc::Router;
 
 mod error;
@@ -8,6 +9,7 @@ mod stores;
 
 use stores::counter::{CounterApiImpl, CounterApi};
 use stores::form::api::{FormApiImpl, FormApi};
+use stores::mission::api::{MissionApiImpl, MissionApi};
 
 
 fn setup_router() -> Router {
@@ -17,11 +19,12 @@ fn setup_router() -> Router {
     // else use CounterApiImpl::default() to set initial count to 0
     let counter_api = CounterApiImpl::default(); 
     let form_api = FormApiImpl::default();
+    let mission_api = MissionApiImpl::default();
     
     Router::new()
         .merge(form_api.into_handler())
-        .merge(counter_api.into_handler()
-    )
+        .merge(counter_api.into_handler())
+        .merge(mission_api.into_handler())
 }
 
 

@@ -6,14 +6,17 @@ import Stage from "./components/Stage.vue";
 import SharedCount from "./components/SharedCount.vue";
 import LocalCount from "./components/LocalCount.vue";
 import Form from "./components/Form.vue";
+import CreateMission from "./components/CreateMission.vue";
 </script>
 
 <template>
   <div class="container">
     <div>
+      <CreateMission />
+    </div>
+    <div>
       <SharedCount />
     </div>
-
     <div>
       <LocalCount />
     </div>
