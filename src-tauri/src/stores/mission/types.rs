@@ -17,8 +17,8 @@ pub struct MissionStateStruct {
 #[derive(Debug)]
 pub struct MissionDataStruct {
   pub mission_name: String,
-  pub keep_out_zone: String,
-  pub keep_in_zone: String,
+  pub keep_out_zone: Vec<String>,
+  pub keep_in_zone: Vec<String>,
   pub status: MissionStatus,
 }
 
