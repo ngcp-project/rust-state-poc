@@ -5,6 +5,8 @@ pub struct MissionStateStruct {
   pub current_step: i32,
   pub total_steps: i32,
   pub mission_data: MissionDataStruct,
+  pub keep_in_zone_coord: String,
+  pub keep_out_zone_coord: String,
   pub is_submitted: bool,
 }
 
@@ -17,8 +19,8 @@ pub struct MissionStateStruct {
 #[derive(Debug)]
 pub struct MissionDataStruct {
   pub mission_name: String,
-  pub keep_out_zone: Vec<String>,
   pub keep_in_zone: Vec<String>,
+  pub keep_out_zone: Vec<String>,
   pub status: MissionStatus,
 }
 

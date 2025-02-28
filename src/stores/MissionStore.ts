@@ -25,7 +25,7 @@ const useMissionStore = createStore<MissionState>(() => ({
     await taurpc.mission.update_mission_data(missionData),
 
   appendKeepInOutZoneCoords: async (keepInZoneCoords: string, keepOutZoneCoords: string) => {
-    console.log("KeepInOutZones submitted: " + keepInZoneCoords + " " + keepOutZoneCoords);
+    console.log("KeepInOutZones submitted: " + keepInZoneCoords + ", " + keepOutZoneCoords);
     return await taurpc.mission.append_keep_in_out_zone_coords(keepInZoneCoords, keepOutZoneCoords);
   },
 
