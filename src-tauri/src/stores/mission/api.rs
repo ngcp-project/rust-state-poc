@@ -19,12 +19,10 @@ impl Default for MissionApiImpl {
     let initial_state = MissionStateStruct {
       current_step: 1,
       total_steps: 2,
-      keep_in_zone_coord: "".to_string(),
-      keep_out_zone_coord: "".to_string(),
       mission_data: MissionDataStruct {
         mission_name: "".to_string(),
-        keep_out_zone: Vec::new(),
-        keep_in_zone: Vec::new(),
+        keep_out_zone: "".to_string(),
+        keep_in_zone: "".to_string(),
         status: MissionStatus::Inactive,
       },
       is_submitted: false,
@@ -84,11 +82,6 @@ pub trait MissionApi {
     app_handle: AppHandle<Wry>,
     mission_data: MissionDataStruct
   ) -> Result<(), String>;
-  async fn append_keep_in_out_zone_coords(
-    app_handle: AppHandle<Wry>,
-    keep_in_zone: String,
-    keep_out_zone: String
-  ) -> Result<(), String>;
   async fn submit_mission(app_handle: AppHandle<Wry>) -> Result<(), String>;
 
   async fn get_default_data() -> MissionStateStruct;
@@ -145,20 +138,6 @@ impl MissionApi for MissionApiImpl {
     self.update_state(app_handle, |state| {
       // update only the nested mission_data property
       state.mission_data = mission_data;
-    }).await
-  }
-
-  async fn append_keep_in_out_zone_coords(
-    self,
-    app_handle: AppHandle<Wry>,
-    keep_in_zone_coords: String,
-    keep_out_zone_coords: String
-  ) -> Result<(), String> {
-    self.update_state(app_handle, |state| {
-      state.mission_data.keep_in_zone.push(keep_in_zone_coords);
-      state.mission_data.keep_out_zone.push(keep_out_zone_coords);
-      println!("Keep in zone: {:?}", state.mission_data.keep_in_zone);
-      println!("Keep out zone: {:?}", state.mission_data.keep_out_zone);
     }).await
   }
 

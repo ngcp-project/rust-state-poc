@@ -20,8 +20,8 @@
       <input
         type="text"
         id="keepInZone"
-        v-model="keepInZoneCoord"
-        @change="updateCoordData($event)"
+        v-model="missionData.keep_in_zone"
+        @change="updateMissionData($event)"
         required
       />
 
@@ -29,12 +29,11 @@
       <input
         type="text"
         id="keepOutZone"
-        v-model="keepOutZoneCoord"
-        @change="updateCoordData($event)"
+        v-model="missionData.keep_out_zone"
+        @change="updateMissionData($event)"
         required
       />
     </div>
-    <button @click="submitKeepInOutZones">append coordinates</button>
   </div>
 
   <!-- Step 2 -->
@@ -68,13 +67,11 @@
 <script setup lang="ts">
 import { getState, subscribe } from "../stores/MissionStore";
 import { onMounted, ref } from "vue";
-import { MissionDataStruct } from "../lib/bindings";
+import { MissionDataStruct, MissionStatus } from "../lib/bindings";
 
 // Initialize refs for variables used in template
 const currentStep = ref(getState().current_step);
 const totalSteps = ref(getState().total_steps);
-const keepInZoneCoord = ref(getState().keep_in_zone_coord);
-const keepOutZoneCoord = ref(getState().keep_out_zone_coord);
 const missionData = ref(getState().mission_data);
 const isSubmitted = ref(getState().is_submitted);
 
@@ -84,19 +81,6 @@ const previousStep = async () => await getState().previousStep();
 const reset = async () => await getState().reset();
 const submitMission = async () => await getState().submitMission();
 
-// this might be wrong?
-const submitKeepInOutZones = async () => {
-  console.log("ASFIOEHGOIEHGIEIEIEIE IMMA KMS");
-  await getState().appendKeepInOutZoneCoords(keepInZoneCoord.value, keepOutZoneCoord.value); // this is just appending the coordinates to the array
-};
-
-// Handler for updating coord data
-const updateCoordData = async (e:Event) => {
-  const target = e.target as HTMLInputElement;
-  console.log(target.id, target.value);
-  console.log("updated the coord data on change Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y");
-}
-
 // Handler for updating mission data
 const updateMissionData = async (e: Event) => {
   const target = e.target as HTMLInputElement | HTMLSelectElement;
@@ -104,18 +88,16 @@ const updateMissionData = async (e: Event) => {
   console.log(target.id, target.value);
 
   // Update the local mission data object
+  // missionData.value[target.id as keyof MissionDataStruct] = target.value as MissionStatus;
+  
   if (target.id === "status") {
-    missionData.value[target.id as keyof MissionDataStruct] = target.value as
-      | "Active"
-      | "Inactive"
-      | "Complete"
-      | "Failed";
+    missionData.value[target.id as keyof MissionDataStruct] = target.value as MissionStatus;
   } else {
-    missionData.value[target.id as keyof MissionDataStruct] = target.value;
+    missionData.value[target.id as keyof Omit<MissionDataStruct, "status">] = target.value;
   }
 
   // Call update mission data method on Tauri, passing the updated mission data
-  // await getState().updateMissionData(getState().mission_data);
+  await getState().updateMissionData(getState().mission_data);
 };
 
 // When the component is mounted/loaded in DOM
@@ -124,8 +106,6 @@ onMounted(() => {
   subscribe(() => {
     currentStep.value = getState().current_step;
     totalSteps.value = getState().total_steps;
-    keepInZoneCoord.value = getState().keep_in_zone_coord;
-    keepOutZoneCoord.value = getState().keep_out_zone_coord;
     missionData.value = getState().mission_data;
     isSubmitted.value = getState().is_submitted;
   });

@@ -8,7 +8,6 @@ interface MissionState extends MissionStateStruct {
   nextStep: () => Promise<null>;
   previousStep: () => Promise<null>;
   updateMissionData: (missionData: MissionDataStruct) => Promise<null>;
-  appendKeepInOutZoneCoords: (keepInZoneCoords: string, keepOutZoneCoords: string) => Promise<null>;
   submitMission: () => Promise<null>;
   reset: () => Promise<null>;
 }
@@ -24,10 +23,6 @@ const useMissionStore = createStore<MissionState>(() => ({
   updateMissionData: async (missionData: MissionDataStruct) =>
     await taurpc.mission.update_mission_data(missionData),
 
-  appendKeepInOutZoneCoords: async (keepInZoneCoords: string, keepOutZoneCoords: string) => {
-    console.log("KeepInOutZones submitted: " + keepInZoneCoords + ", " + keepOutZoneCoords);
-    return await taurpc.mission.append_keep_in_out_zone_coords(keepInZoneCoords, keepOutZoneCoords);
-  },
 
   submitMission: async () => {
     console.log("Mission submitted: " + JSON.stringify(taurpc.mission.get_data()));
