@@ -82,6 +82,8 @@ pub trait MissionApi {
     app_handle: AppHandle<Wry>,
     mission_data: MissionDataStruct
   ) -> Result<(), String>;
+  async fn submit_mission(app_handle: AppHandle<Wry>) -> Result<(), String>;
+
   async fn get_default_data() -> MissionStateStruct;
   async fn get_data() -> MissionStateStruct;
 
@@ -136,6 +138,13 @@ impl MissionApi for MissionApiImpl {
     self.update_state(app_handle, |state| {
       // update only the nested mission_data property
       state.mission_data = mission_data;
+    }).await
+  }
+
+  async fn submit_mission(self, app_handle: AppHandle<Wry>) -> Result<(), String> {
+    self.update_state(app_handle, |state| {
+      state.is_submitted = true;
+      println!("Mission submitted: {:?}", state.mission_data);
     }).await
   }
 

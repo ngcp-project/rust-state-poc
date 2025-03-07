@@ -17,7 +17,6 @@ struct AppData {
   count: i32,
   mostRecentStage: StageData, 
   telemetry: TelemetryData,
-  mission: Mission,
 }
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -40,20 +39,6 @@ struct TelemetryData {
   lastUpdated: chrono::DateTime<chrono::Utc>,
   fireFound: bool,
   fireCoordinate: Coordinate,
-}
-
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
-struct Mission {
-  missionName: String,
-  status: MissionStatus,
-}
-
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
-enum MissionStatus {
-  Active,
-  Inactive,
-  Complete,
-  Failed,
 }
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -99,32 +84,6 @@ async fn get_telemetry(
   Ok(())
 }
 
-#[tauri::command]
-async fn create_mission(
-  app_data: State<'_, Arc<Mutex<AppData>>>,
-  missionData: Mission,
-  window: Window
-) -> Result<(), String> {
-  let app_data = app_data.inner().clone();
-  
-  tokio::spawn(async move {
-    let mut data = app_data.lock().await;
-
-    // post mission info
-    data.mission.missionName = missionData.missionName;
-    data.mission.status = missionData.status;
-    
-    // add in a query if postgres-ing
-
-    // Emit updated telemetry to frontend
-    if let Err(e) = window.emit("mission_post", "Posted MissionInfo") {
-      eprintln!("Failed to emit mission_post: {}", e);
-    }
-  });
-
-  Ok(())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   Builder::default()
@@ -157,10 +116,6 @@ pub fn run() {
                 latitude: 0.0,
                 longitude: 0.0,
               },
-            },
-            mission: Mission {
-              missionName: "Mission 1".to_string(),
-              status: MissionStatus::Active,
             },
           })
         )
