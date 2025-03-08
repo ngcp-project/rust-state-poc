@@ -5,6 +5,7 @@ use tokio::time::{ Duration, interval };
 use tauri::Emitter;
 use tauri::Manager;
 use rand::{ Rng, SeedableRng, rngs::StdRng };
+use std::iter::Enumerate;
 use std::sync::Arc;
 use chrono::Utc;
 mod commands {
@@ -14,7 +15,7 @@ mod commands {
 struct AppData {
   welcome_message: String,
   count: i32,
-  mostRecentStage: StageData,
+  mostRecentStage: StageData, 
   telemetry: TelemetryData,
 }
 
