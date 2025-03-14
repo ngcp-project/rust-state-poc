@@ -70,8 +70,6 @@ import { onMounted, ref } from "vue";
 import { MissionDataStruct, MissionStatus } from "../lib/bindings";
 
 // Initialize refs for variables used in template
-const currentStep = ref(getState().current_step);
-const totalSteps = ref(getState().total_steps);
 const missionData = ref(getState().mission_data);
 const isSubmitted = ref(getState().is_submitted);
 

@@ -23,7 +23,6 @@ import TestMission from "./components/TestMission.vue";
     <div>
       <Form />
     </div>
-    <!-- <GenericCount /> -->
     <TestMission />
   </div>
 </template>

@@ -9,7 +9,6 @@ mod stores;
 use stores::counter::{CounterApiImpl, CounterApi};
 use stores::form::api::{FormApiImpl, FormApi};
 use stores::mission::api::{MissionApiImpl, MissionApi};
-use stores::mission::api::{TestMissionAPI, MissionAPI};
 
 
 fn setup_router() -> Router {
@@ -19,7 +18,6 @@ fn setup_router() -> Router {
     // else use CounterApiImpl::default() to set initial count to 0
     let counter_api = CounterApiImpl::default(); 
     let form_api = FormApiImpl::default();
-    let mission_api = TestMissionAPI::default();
     let mission_api = MissionApiImpl::default();
     
     Router::new()

@@ -17,7 +17,6 @@ const currentMissionStage = ref(getState().stages[getState().current_stage_id]);
 // which is linked to taurRPC increaseCount binding
 // which is linked to tauri increase_count command
 const transitionNextStage = () => {
-    console.log("HELLO")
     getState().transitionNextStage();
 };
 
