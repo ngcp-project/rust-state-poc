@@ -22,7 +22,7 @@ export type TauRpcFormApiInputTypes = { proc_name: "next_step"; input_type: null
 
 export type TauRpcFormApiOutputTypes = { proc_name: "next_step"; output_type: null } | { proc_name: "previous_step"; output_type: null } | { proc_name: "reset"; output_type: null } | { proc_name: "update_form"; output_type: null } | { proc_name: "submit_form"; output_type: null } | { proc_name: "get_default_data"; output_type: FormStateStruct } | { proc_name: "get_data"; output_type: FormStateStruct } | { proc_name: "on_updated"; output_type: null }
 
-export type TauRpcMissionApiInputTypes = { proc_name: "transition_next_stage"; input_type: null } | { proc_name: "get_default_data"; input_type: null } | { proc_name: "get_data"; input_type: null } | { proc_name: "reset"; input_type: null } | { proc_name: "submit_mission"; input_type: null } | { proc_name: "update_mission_data"; input_type: { __taurpc_type: MissionInfoStruct } } | { proc_name: "on_updated"; input_type: { __taurpc_type: MissionInfoStruct } }
+export type TauRpcMissionApiInputTypes = { proc_name: "transition_next_stage"; input_type: null } | { proc_name: "get_default_data"; input_type: null } | { proc_name: "get_data"; input_type: null } | { proc_name: "reset"; input_type: null } | { proc_name: "submit_mission"; input_type: null } | { proc_name: "update_mission_data"; input_type: { __taurpc_type: MissionStruct } } | { proc_name: "on_updated"; input_type: { __taurpc_type: MissionInfoStruct } }
 
 export type TauRpcMissionApiOutputTypes = { proc_name: "transition_next_stage"; output_type: null } | { proc_name: "get_default_data"; output_type: MissionInfoStruct } | { proc_name: "get_data"; output_type: MissionInfoStruct } | { proc_name: "reset"; output_type: null } | { proc_name: "submit_mission"; output_type: null } | { proc_name: "update_mission_data"; output_type: null } | { proc_name: "on_updated"; output_type: null }
 
@@ -30,7 +30,7 @@ export type TestMissionStruct = { stages: string[]; current_stage_id: number }
 
 export type VehicleStruct = { vehicle_name: string; current_stage_id: string; stages_list: MissionStageStruct[] }
 
-const ARGS_MAP = {"counter":"{\"get_data\":[],\"get_default_data\":[],\"increase\":[],\"on_updated\":[\"new_data\"]}","mission":"{\"get_data\":[],\"reset\":[],\"transition_next_stage\":[],\"get_default_data\":[],\"update_mission_data\":[\"mission_data\"],\"on_updated\":[\"new_data\"],\"submit_mission\":[]}","form":"{\"submit_form\":[],\"update_form\":[\"form_data\"],\"reset\":[],\"get_default_data\":[],\"previous_step\":[],\"next_step\":[],\"get_data\":[],\"on_updated\":[\"new_data\"]}"}
+const ARGS_MAP = {"form":"{\"previous_step\":[],\"get_data\":[],\"update_form\":[\"form_data\"],\"submit_form\":[],\"reset\":[],\"get_default_data\":[],\"on_updated\":[\"new_data\"],\"next_step\":[]}","counter":"{\"on_updated\":[\"new_data\"],\"get_data\":[],\"increase\":[],\"get_default_data\":[]}","mission":"{\"get_default_data\":[],\"transition_next_stage\":[],\"on_updated\":[\"new_data\"],\"submit_mission\":[],\"update_mission_data\":[\"mission_data\"],\"get_data\":[],\"reset\":[]}"}
 import { createTauRPCProxy as createProxy } from "taurpc"
 
 export const createTauRPCProxy = () => createProxy<Router>(ARGS_MAP)

@@ -33,6 +33,7 @@ impl Default for MissionApiImpl {
                 status: MissionStatus::Inactive,
             },
             is_submitted: false,
+            
         };
 
         // Create a new instance with the initial state
@@ -83,7 +84,7 @@ pub trait MissionApi {
     async fn get_data() -> MissionInfoStruct;
     async fn reset(app_handle: AppHandle<Wry>) -> Result<(), String>;
     async fn submit_mission(app_handle: AppHandle<Wry>) -> Result<(), String>;
-    async fn update_mission_data(app_handle: AppHandle<Wry>, mission_data: MissionInfoStruct) -> Result<(), String>;
+    async fn update_mission_data(app_handle: AppHandle<Wry>, mission_data: MissionStruct) -> Result<(), String>;
 
     #[taurpc(event)]
     async fn on_updated(new_data: MissionInfoStruct);
@@ -121,13 +122,13 @@ impl MissionApi for MissionApiImpl {
     async fn update_mission_data(
       self,
       app_handle: AppHandle<Wry>,
-      mission_data: MissionInfoStruct
+      mission_data: MissionStruct
     ) -> Result<(), String> {
       // |state| {...} is a closure (anonymous function) that takes a mutable reference to the state
       // wrap the parameters of closure in ||
       self.update_state(app_handle, |state| {
         // update only the nested mission_data property
-        state.mission_form_state = mission_data.mission_form_state;
+        state.mission_form_state = mission_data;
       }).await
     }
   

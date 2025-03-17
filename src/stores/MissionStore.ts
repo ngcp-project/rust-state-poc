@@ -1,26 +1,22 @@
 import { createStore } from "zustand/vanilla";
-import { createTauRPCProxy, MissionStateStruct, MissionDataStruct } from "../lib/bindings";
+import { createTauRPCProxy, MissionInfoStruct } from "../lib/bindings";
 
 const taurpc = await createTauRPCProxy();
 
 // MissionStateStruct provides the state variables, so extend it with new methods
-interface MissionState extends MissionStateStruct {
-  nextStep: () => Promise<null>;
-  previousStep: () => Promise<null>;
-  updateMissionData: (missionData: MissionDataStruct) => Promise<null>;
+interface MissionState extends MissionInfoStruct {
+  updateMissionData: (missionData: MissionInfoStruct) => Promise<null>;
   submitMission: () => Promise<null>;
   reset: () => Promise<null>;
 }
 
-const initialState: MissionStateStruct = await taurpc.mission.get_default_data();
+const initialState: MissionInfoStruct = await taurpc.mission.get_default_data();
 
 const useMissionStore = createStore<MissionState>(() => ({
   // Destructure the initial state to populate it with the state variables
   ...initialState,
 
-  nextStep: async () => await taurpc.mission.next_step(),
-  previousStep: async () => await taurpc.mission.previous_step(),
-  updateMissionData: async (missionData: MissionDataStruct) =>
+  updateMissionData: async (missionData: MissionInfoStruct) =>
     await taurpc.mission.update_mission_data(missionData),
 
 
@@ -34,13 +30,13 @@ const useMissionStore = createStore<MissionState>(() => ({
 // Get current mission state from tauri
 // Use event listener to initialize on reload
 // initialState may be out of date
-taurpc.mission.get_data().then((data: MissionStateStruct) => {
+taurpc.mission.get_data().then((data: MissionInfoStruct) => {
   console.log("Mission Data Initialized", data);
   useMissionStore.setState({ ...data });
 });
 
 // Update mission state when tauri emits state update
-taurpc.mission.on_updated.on((new_data: MissionStateStruct) => {
+taurpc.mission.on_updated.on((new_data: MissionInfoStruct) => {
   console.log("Mission data updated", new_data);
   useMissionStore.setState({ ...new_data });
 });
