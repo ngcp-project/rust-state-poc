@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use sea_orm::{Database, DatabaseConnection, DbErr};
 use taurpc::Router;
 
 mod error;
@@ -30,6 +31,13 @@ fn setup_router() -> Router {
 #[tokio::main]
 async fn main() {
     let router = setup_router();
+    let db: DatabaseConnection = Database::connect("postgres://ngcp:ngcp@localhost:5433/ngcpdb")
+        .await
+        .expect("Failed to connect to the database");
+
+    assert!(db.ping().await.is_ok());
+    db.clone().close().await.expect("Failed to close the database connection");
+    assert!(matches!(db.ping().await, Err(DbErr::ConnectionAcquire(_))));
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())

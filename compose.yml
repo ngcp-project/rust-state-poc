@@ -1,5 +1,4 @@
 name: ngcp-database-api
-version: "3.9"
 
 services:
   db:
@@ -9,9 +8,9 @@ services:
     environment:
       POSTGRES_PASSWORD: ngcp
       POSTGRES_USER: ngcp
-      POSTGRES_DB: ngcp-db
+      POSTGRES_DB: ngcpdb
     ports:
-      - 5432:5432
+      - 5433:5432
 
   adminer:
     image: adminer

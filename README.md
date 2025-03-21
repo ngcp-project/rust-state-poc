@@ -18,6 +18,9 @@ pnpm run tauri dev
 ```
 ### Important Note: NEVER build the Rust codebase under the `src-tauri` directory using the command `cargo build`. This WILL cause problems!
 
+3. Database Initialization
+
+- Helpful resource: [PostGreSQL Connection issues](https://github.com/sameersbn/docker-postgresql/issues/112)
 
 
 ## Mission Info JSON
