@@ -17,6 +17,7 @@ impl MigrationTrait for Migration {
   async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
     manager.create_type(
       Type::create()
+        .if_not_exists()
         .as_enum(Alias::new("status"))
         .values([
           Alias::new("Active"),
