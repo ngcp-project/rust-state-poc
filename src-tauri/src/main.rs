@@ -35,6 +35,15 @@ async fn main() {
         .await
         .expect("Failed to connect to the database");
 
+    // need to import sqlx or smthin?
+    sqlx::migrate!("./migrations")
+        .run(&db)
+        .await?;
+    // cargo run to run the code ig ¯\_(ツ)_/¯
+    // also need to add a build script which u can do with the following 2 commands:
+    // cargo install sqlx-cli
+    // ~/.cargo/bin/sqlx migrate build-script
+
     assert!(db.ping().await.is_ok());
     db.clone().close().await.expect("Failed to close the database connection");
     assert!(matches!(db.ping().await, Err(DbErr::ConnectionAcquire(_))));
