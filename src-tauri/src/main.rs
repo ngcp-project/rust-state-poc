@@ -1,8 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use sea_orm::{Database, DatabaseConnection, DbErr};
 use taurpc::Router;
+use sqlx::postgres::PgPoolOptions;
 
 mod error;
 mod stores;
@@ -31,22 +31,75 @@ fn setup_router() -> Router {
 #[tokio::main]
 async fn main() {
     let router = setup_router();
-    let db: DatabaseConnection = Database::connect("postgres://ngcp:ngcp@localhost:5433/ngcpdb")
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect("postgres://ngcp:ngcp@localhost:5433/ngcpdb")
         .await
         .expect("Failed to connect to the database");
+        
+    let _cleanup_mission = sqlx::query("
+    DROP TABLE IF EXISTS Mission CASCADE;
+    ").execute(&pool).await.expect("Failed to execute query");
+    
+    let _cleanup_vehicle = sqlx::query("
+    DROP TABLE IF EXISTS Vehicle CASCADE;
+    ").execute(&pool).await.expect("Failed to execute query");
+    
+    let _cleanup_stage = sqlx::query("
+    DROP TABLE IF EXISTS Stage CASCADE;
+    ").execute(&pool).await.expect("Failed to execute query");
+    
+    let _cleanup_zone = sqlx::query("
+    DROP TABLE IF EXISTS zones;
+    ").execute(&pool).await.expect("Failed to execute query");
 
-    // need to import sqlx or smthin?
-    sqlx::migrate!("./migrations")
-        .run(&db)
-        .await?;
-    // cargo run to run the code ig ¯\_(ツ)_/¯
-    // also need to add a build script which u can do with the following 2 commands:
-    // cargo install sqlx-cli
-    // ~/.cargo/bin/sqlx migrate build-script
 
-    assert!(db.ping().await.is_ok());
-    db.clone().close().await.expect("Failed to close the database connection");
-    assert!(matches!(db.ping().await, Err(DbErr::ConnectionAcquire(_))));
+    let _create_mission_table = sqlx::query("
+    CREATE TABLE IF NOT EXISTS Mission (
+        missionName VARCHAR(255) PRIMARY KEY
+    );
+    ").execute(&pool).await.expect("Failed to execute query");
+
+
+    let _create_vehicle_table = sqlx::query("
+    CREATE TABLE IF NOT EXISTS Vehicle (
+        vehicleName VARCHAR(255) PRIMARY KEY,
+        missionName VARCHAR(255),
+        currentStageID INT,
+        FOREIGN KEY (missionName) REFERENCES Mission(missionName),
+        CONSTRAINT missionVehicle UNIQUE (vehicleName, missionName)
+    );
+    ").execute(&pool).await.expect("Failed to execute query");
+
+    let _create_stage_table = sqlx::query("
+    CREATE TABLE IF NOT EXISTS Stage (
+        stageID SERIAL PRIMARY KEY,
+        stageName VARCHAR(255),
+        vehicleName VARCHAR(255),
+        FOREIGN KEY (vehicleName) REFERENCES Vehicle(vehicleName)
+    );
+    ").execute(&pool).await.expect("Failed to execute query");
+
+    let _temp_zones = sqlx::query("
+    CREATE TABLE IF NOT EXISTS zones (
+        keepInZone TEXT,
+        keepOutZone TEXT,
+        searchArea TEXT,
+        targetCoordinate TEXT,
+        stageID INT PRIMARY KEY
+    );
+    ").execute(&pool).await.expect("Failed to execute query");
+
+
+    let _vehicle_index = sqlx::query("
+    CREATE INDEX idx_vehicle_currentStage
+    ON Vehicle(currentStageID);
+    ").execute(&pool).await;
+
+    let _stage_index = sqlx::query("
+    CREATE INDEX idx_stage_vehicle
+    ON Stage(vehicleName);
+    ").execute(&pool).await;
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
