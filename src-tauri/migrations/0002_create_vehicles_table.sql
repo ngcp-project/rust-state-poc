@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS vehicles (
   CONSTRAINT fk-mission_name
     FOREIGN KEY (mission_name)
     REFERENCES missions (mission_name)
-    -- ON DELETE CASCADE
-    -- ON UPDATE CASCADE
-    -- idk if those r necessary ^
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );

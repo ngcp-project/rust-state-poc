@@ -38,58 +38,68 @@ async fn main() {
         .expect("Failed to connect to the database");
         
     let _cleanup_mission = sqlx::query("
-    DROP TABLE IF EXISTS Mission CASCADE;
+    DROP TABLE IF EXISTS missions CASCADE;
     ").execute(&pool).await.expect("Failed to execute query");
     
     let _cleanup_vehicle = sqlx::query("
-    DROP TABLE IF EXISTS Vehicle CASCADE;
+    DROP TABLE IF EXISTS vehicles CASCADE;
     ").execute(&pool).await.expect("Failed to execute query");
     
     let _cleanup_stage = sqlx::query("
-    DROP TABLE IF EXISTS Stage CASCADE;
-    ").execute(&pool).await.expect("Failed to execute query");
-    
-    let _cleanup_zone = sqlx::query("
-    DROP TABLE IF EXISTS zones;
+    DROP TABLE IF EXISTS stages CASCADE;
     ").execute(&pool).await.expect("Failed to execute query");
 
+    // This is to create the status enum but I dont think it's needed to be executed more than once (hence why this is commented out)
+    //
+    // let _create_status_type = sqlx::query("
+    // DO $$
+    // BEGIN
+    //     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'status') THEN
+    //         CREATE TYPE status AS ENUM ('Active', 'Inactive', 'Complete', 'Failed');
+    //     END IF;
+    // END $$;
+    // ").execute(&pool).await.expect("Failed to create type 'status'");
 
     let _create_mission_table = sqlx::query("
-    CREATE TABLE IF NOT EXISTS Mission (
-        missionName VARCHAR(255) PRIMARY KEY
+    CREATE TABLE IF NOT EXISTS missions (
+        mission_name VARCHAR(255) PRIMARY KEY,
+        keep_in_zones TEXT[] NOT NULL,
+        keep_out_zones TEXT[] NOT NULL,
+        status status
     );
-    ").execute(&pool).await.expect("Failed to execute query");
+    ").execute(&pool).await.expect("Failed to create table 'missions'");
 
 
     let _create_vehicle_table = sqlx::query("
-    CREATE TABLE IF NOT EXISTS Vehicle (
-        vehicleName VARCHAR(255) PRIMARY KEY,
-        missionName VARCHAR(255),
-        currentStageID INT,
-        FOREIGN KEY (missionName) REFERENCES Mission(missionName),
-        CONSTRAINT missionVehicle UNIQUE (vehicleName, missionName)
+    CREATE TABLE IF NOT EXISTS vehicles (
+        mission_name VARCHAR(255) NOT NULL,
+        vehicle_name VARCHAR(255) NOT NULL,
+        current_stage_id INTEGER NOT NULL,
+        PRIMARY KEY (mission_name, vehicle_name),
+        CONSTRAINT fk_mission_name
+        FOREIGN KEY (mission_name)
+        REFERENCES missions (mission_name)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
     );
     ").execute(&pool).await.expect("Failed to execute query");
+
+    let _add_unique_constraint = sqlx::query("
+    ALTER TABLE vehicles ADD CONSTRAINT vehicle_name_unique UNIQUE (vehicle_name);
+    ").execute(&pool).await.expect("Failed to add unique constraint");
 
     let _create_stage_table = sqlx::query("
-    CREATE TABLE IF NOT EXISTS Stage (
-        stageID SERIAL PRIMARY KEY,
-        stageName VARCHAR(255),
-        vehicleName VARCHAR(255),
-        FOREIGN KEY (vehicleName) REFERENCES Vehicle(vehicleName)
+    CREATE TABLE IF NOT EXISTS stages (
+        stage_id SERIAL PRIMARY KEY,
+        vehicle_name VARCHAR(255) NOT NULL,
+        search_area TEXT[] NOT NULL,       
+        stage_name VARCHAR(255) NOT NULL,
+        target_coordinate TEXT NOT NULL, 
+        CONSTRAINT fk_vehicle_name
+        FOREIGN KEY (vehicle_name)
+        REFERENCES vehicles (vehicle_name)
     );
     ").execute(&pool).await.expect("Failed to execute query");
-
-    let _temp_zones = sqlx::query("
-    CREATE TABLE IF NOT EXISTS zones (
-        keepInZone TEXT,
-        keepOutZone TEXT,
-        searchArea TEXT,
-        targetCoordinate TEXT,
-        stageID INT PRIMARY KEY
-    );
-    ").execute(&pool).await.expect("Failed to execute query");
-
 
     let _vehicle_index = sqlx::query("
     CREATE INDEX idx_vehicle_currentStage
