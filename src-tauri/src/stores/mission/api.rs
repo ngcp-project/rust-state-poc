@@ -4,6 +4,7 @@ use tauri::{AppHandle, Wry};
 use taurpc;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use sqlx::query;
 
 use super::types::{ MissionInfoStruct, MissionStruct, MissionStatus };
 
@@ -94,6 +95,12 @@ impl MissionApi for MissionApiImpl {
     }
 
     async fn transition_next_stage(self, app_handle: AppHandle<Wry>) -> Result<(), String> {
+        query("
+            INSERT INTO test (name, age) VALUES ($1, $2)
+        ").bind("John Doe")
+        .bind(30)
+        .execute(&self.db).await.expect("Failed to insert stage");
+
         self.update_state(app_handle, |state| {
             state.current_stage_id = (state.current_stage_id + 1) % state.stages.len() as i32;
             println!("Current Stage: {}", state.stages[state.current_stage_id as usize]);

@@ -30,7 +30,7 @@ export type TestMissionStruct = { stages: string[]; current_stage_id: number }
 
 export type VehicleStruct = { vehicle_name: string; current_stage_id: string; stages_list: MissionStageStruct[] }
 
-const ARGS_MAP = {"form":"{\"get_default_data\":[],\"update_form\":[\"form_data\"],\"on_updated\":[\"new_data\"],\"get_data\":[],\"submit_form\":[],\"reset\":[],\"next_step\":[],\"previous_step\":[]}","counter":"{\"get_data\":[],\"increase\":[],\"get_default_data\":[],\"on_updated\":[\"new_data\"]}","mission":"{\"get_data\":[],\"transition_next_stage\":[],\"reset\":[],\"get_default_data\":[],\"submit_mission\":[],\"update_mission_data\":[\"mission_data\"],\"on_updated\":[\"new_data\"]}"}
+const ARGS_MAP = {"form":"{\"get_default_data\":[],\"submit_form\":[],\"next_step\":[],\"previous_step\":[],\"update_form\":[\"form_data\"],\"on_updated\":[\"new_data\"],\"reset\":[],\"get_data\":[]}","mission":"{\"get_data\":[],\"update_mission_data\":[\"mission_data\"],\"transition_next_stage\":[],\"reset\":[],\"on_updated\":[\"new_data\"],\"get_default_data\":[],\"submit_mission\":[]}","counter":"{\"get_default_data\":[],\"increase\":[],\"get_data\":[],\"on_updated\":[\"new_data\"]}"}
 import { createTauRPCProxy as createProxy } from "taurpc"
 
 export const createTauRPCProxy = () => createProxy<Router>(ARGS_MAP)
