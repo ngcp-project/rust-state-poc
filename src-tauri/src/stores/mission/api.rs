@@ -2,6 +2,8 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use tauri::{AppHandle, Wry};
 use taurpc;
+use sqlx::postgres::PgPoolOptions;
+use sqlx::PgPool;
 
 use super::types::{ MissionInfoStruct, MissionStruct, MissionStatus };
 
@@ -9,14 +11,12 @@ use super::types::{ MissionInfoStruct, MissionStruct, MissionStatus };
 #[derive(Clone)]
 pub struct MissionApiImpl {
     state: Arc<Mutex<MissionInfoStruct>>,
+    db: PgPool,
 }
 
-
-// Default implementation for FormApiImpl that sets the initial state
-// Initializes form state when calling FormApiImpl::default()
-impl Default for MissionApiImpl {
-    fn default() -> Self {
-        // Create a new initial state according to FormStateStruct
+impl MissionApiImpl {
+    // Constructor for FormApiImpl
+    pub async fn new() -> Self {
         let initial_state = MissionInfoStruct {
             stages: vec!["Initialize".to_string(), "Search".to_string(), "Rescue".to_string()],
             current_stage_id: 0,
@@ -33,20 +33,17 @@ impl Default for MissionApiImpl {
                 status: MissionStatus::Inactive,
             },
             is_submitted: false,
-            
         };
 
-        // Create a new instance with the initial state
-        Self::new(initial_state)
-    }
-}
 
-impl MissionApiImpl {
-    // Constructor for FormApiImpl
-    pub fn new(initial_state: MissionInfoStruct) -> Self {
         // Must wrap the state in an Arc<Mutex<>>
         Self { 
             state: Arc::new(Mutex::new(initial_state)),
+            db: PgPoolOptions::new()
+                .max_connections(5)
+                .connect("postgres://ngcp:ngcp@localhost:5433/ngcpdb")
+                .await
+                .expect("Failed to connect to the database"),
         }
     }
     // Helper method to emit state changes
@@ -70,7 +67,6 @@ impl MissionApiImpl {
         self.emit_state_update(&app_handle, &state)
     }
 }
-
 #[taurpc::procedures(
     event_trigger = MissionEventTrigger, // Define the event trigger for the form api (used in emit_state_update)
     export_to = "../src/lib/bindings.ts", 
@@ -94,7 +90,7 @@ pub trait MissionApi {
 #[taurpc::resolvers]
 impl MissionApi for MissionApiImpl {
     async fn get_default_data(self) -> MissionInfoStruct {
-        Self::default().state.lock().await.clone()
+        Self::new().await.state.lock().await.clone()
     }
 
     async fn transition_next_stage(self, app_handle: AppHandle<Wry>) -> Result<(), String> {
@@ -111,7 +107,7 @@ impl MissionApi for MissionApiImpl {
 
     async fn reset(self, app_handle: AppHandle<Wry>) -> Result<(), String> {
       // create a new MissionStruct with default values
-      let default_state = Self::default().state.lock().await.clone();
+      let default_state = Self::new().await.state.lock().await.clone();
       self.update_state(app_handle, |state| {
         // dereference the pointer(*) to directly modify state variable
         // in order to overwrite the existing state
