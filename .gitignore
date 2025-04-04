@@ -25,3 +25,13 @@ src/lib/bindings.ts
 *.sw?
 src-tauri/tauri.conf.json
 bun.lockb
+
+target
+firedbg
+Cargo.lock
+*.sublime*
+.vscode
+.idea/*
+*/.idea/*
+.env.local
+.DS_Store
