@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::fmt::Result;
+
 use taurpc::Router;
 use sqlx::postgres::PgPoolOptions;
 
@@ -26,7 +28,6 @@ fn setup_router() -> Router {
         .merge(counter_api.into_handler())
         .merge(mission_api.into_handler())
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -110,6 +111,37 @@ async fn main() {
     CREATE INDEX idx_stage_vehicle
     ON Stage(vehicleName);
     ").execute(&pool).await;
+
+    // join to get all missions
+    let missions = sqlx::query(
+        "
+        SELECT 
+            missions.mission_name,
+            missions.status AS mission_status,
+            missions.keep_in_zones,
+            missions.keep_out_zones,
+            vehicles.vehicle_name,
+            vehicles.current_stage_id AS current_stage,
+            vehicles.is_auto,
+            vehicles.patient_status,
+            stages.stage_id,
+            stages.stage_name,
+            stages.search_area,
+            stages.target_coordinate
+        FROM missions
+        LEFT JOIN vehicles ON vehicles.mission_name = missions.mission_name
+        LEFT JOIN stages 
+            ON stages.vehicle_name = vehicles.vehicle_name
+            AND stages.mission_name = vehicles.mission_name;
+        "
+    )
+    .fetch_all(&pool)
+    .await
+    .expect("Failed to execute query");
+
+    // Print the results
+    println!("Results: {:?}", missions);
+    // println("TEST AWAWAWAWAWAWAWAWA");
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
