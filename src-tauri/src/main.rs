@@ -19,9 +19,9 @@ const DB_URL: &str = "postgres://ngcp:ngcp@localhost:5433/ngcpdb";
 async fn init_database_dummy_data() {
     let mut db_conn = PgConnection::connect(DB_URL).await.expect("Failed to connect to the database");
 
-    let _insert_dummy_discover_mission = query("
+    let insert_dummy_discover_mission = query("
         INSERT INTO missions(mission_name, keep_in_zones, keep_out_zones, status) 
-        VALUES ($1, $2, $3, $4::status)
+        VALUES ($1, $2, $3, $4::status) RETURNING mission_id
     ")
     .bind("Discover Mission")
     .bind(&vec![
@@ -57,15 +57,57 @@ async fn init_database_dummy_data() {
         ]"#.to_string()
     ])
     .bind("Inactive")
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into missions");
+
+    let discover_mission_id: i32 = insert_dummy_discover_mission.get::<i32, _>("mission_id");
+    println!("Discover Mission ID: {}", discover_mission_id);
+
+    let _insert_dummy_discover_mra = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(discover_mission_id)
+    .bind("MRA")
+    .bind(-1) 
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
+    
+
+    let _insert_dummy_discover_eru = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(discover_mission_id)
+    .bind("ERU")
+    .bind(-1)
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
+
+    let _insert_dummy_discover_mea = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(discover_mission_id)
+    .bind("MEA")
+    .bind(-1)
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
+
+    
+
+
+
 
 
     let _insert_dummy_retrieve_mission = query("
         INSERT INTO missions(mission_name, keep_in_zones, keep_out_zones, status) 
-        VALUES ($1, $2, $3, $4::status)
-    ") // Assuming mission_id is 1 for the first mission
+        VALUES ($1, $2, $3, $4::status) RETURNING mission_id
+    ") 
     .bind("Retrieve Mission")
     .bind(&vec![
         r#"[
@@ -100,11 +142,46 @@ async fn init_database_dummy_data() {
         ]"#.to_string()
     ])
     .bind("Inactive")
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into missions");
+    let retrieve_mission_id: i32 = _insert_dummy_retrieve_mission.get::<i32, _>("mission_id");
+    println!("Retrieve Mission ID: {}", retrieve_mission_id);
 
 
+    let _insert_dummy_retrieve_mra = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(retrieve_mission_id)
+    .bind("MRA")
+    .bind(-1)
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
+
+      
+    let _insert_dummy_retrieve_eru = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(retrieve_mission_id)
+    .bind("ERU")
+    .bind(-1)
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
+
+    let _insert_dummy_retrieve_mea = query("
+        INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
+        VALUES ($1, $2, $3)
+    ")
+    .bind(retrieve_mission_id)
+    .bind("MEA")
+    .bind(-1)
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into vehicles");
     
 
     // let test_result = query("
