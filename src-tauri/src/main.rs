@@ -219,7 +219,10 @@ async fn setup_router() -> Router {
     // else use CounterApiImpl::default() to set initial count to 0
     let counter_api = CounterApiImpl::default(); 
     let form_api = FormApiImpl::default();
-    let mission_api = MissionApiImpl::new().await;
+    // let mission_api = MissionApiImpl::new().await;
+    let mission_api = MissionApiImpl::default();
+        
+    // let router = Router::new().merge(missions_api.into_handler());
     
     Router::new()
         .merge(form_api.into_handler())

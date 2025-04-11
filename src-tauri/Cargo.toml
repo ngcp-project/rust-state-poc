@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "2.0.0-rc", features = [] }
 
 [dependencies]
-taurpc = "0.3.0"
+taurpc = "0.4.1"
 tokio = { version = "1.41.1", features = ["full"] }
 specta = { version = "=2.0.0-rc.9", features = ["export", "typescript"] }
 tauri = { version = "2.0.0-rc", features = [] }

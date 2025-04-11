@@ -1,23 +1,22 @@
 #[taurpc::ipc_type]
-pub struct MissionInfoStruct {
-    pub current_mission: MissionStruct,
-    pub mission_form_state: MissionStruct,
-    pub stages: Vec<String>,
-    pub current_stage_id: i32,
-    pub is_submitted: bool,
+#[derive(Debug)]
+pub struct MissionsStruct {
+    pub current_mission: u32,
+    pub missions: Vec<MissionStruct>,
 }
 
 #[taurpc::ipc_type]
 #[derive(Debug)]
 pub struct MissionStruct {
     pub mission_name: String,
-    pub keep_in_zone: String,
-    pub keep_out_zone: String,
-    pub status: MissionStatus
+    pub mission_id: u32,
+    pub mission_status: MissionStageStatusEnum,
+    pub vehicles: VehiclesStruct,
+    pub zones: ZonesStruct,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, specta::Type, Clone, Debug)]
-pub enum MissionStatus {
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, specta::Type)]
+pub enum MissionStageStatusEnum {
     Active,
     Inactive,
     Complete,
@@ -25,31 +24,67 @@ pub enum MissionStatus {
 }
 
 #[taurpc::ipc_type]
+#[derive(Debug)]
 pub struct VehicleStruct {
-    pub vehicle_name: String,
-    pub current_stage_id: String,
-    pub stages_list: Vec<MissionStageStruct>,
+    pub vehicle_name: VehicleEnum,
+    pub current_stage: u32,
+    pub is_auto: Option<bool>,
+    pub patient_status: Option<PatientStatusEnum>,
+    pub stages: Vec<StageStruct>,
 }
-// stages_list[current_stage_id]
-
-
-// Stage ID, vehicleName, searchArea, stageName, targetCoordinate
-// 5, ERU, 1, Search and Rescue, 1.234, 5.678
-// 7, MRA, 2, Search, 1.234, 5.678
-// 10, MEU, 6, Rescue, 1.234, 5.678
-
-
 
 #[taurpc::ipc_type]
-pub struct MissionStageStruct {
+#[derive(Debug)]
+#[allow(non_snake_case)]
+// create a VehiclesStruct for each vehicle
+// since each mission requires all 3 vehicles to exist
+// so hardcode in the vehicle enums as keys
+pub struct VehiclesStruct {
+    pub MEA: VehicleStruct,
+    pub ERU: VehicleStruct,
+    pub MRA: VehicleStruct,
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, specta::Type)]
+pub enum VehicleEnum {
+    MEA,
+    ERU,
+    MRA,
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, specta::Type)]
+pub enum PatientStatusEnum {
+    Secured,
+    Unsecured,
+}
+
+#[taurpc::ipc_type]
+#[derive(Debug)]
+pub struct StageStruct {
     pub stage_name: String,
-    pub vehicle_name: String,
-    pub search_area: String,
-    pub target_coordinate: String,
+    pub stage_id: u32,
+    pub stage_status: MissionStageStatusEnum,
+    pub search_area: GeofenceType,
 }
 
 #[taurpc::ipc_type]
-pub struct TestMissionStruct {
-    pub stages: Vec<String>,
-    pub current_stage_id: i32,
+#[derive(Debug)]
+pub struct ZonesStruct {
+    pub keep_in_zones: Vec<GeofenceType>,
+    pub keep_out_zones: Vec<GeofenceType>,
 }
+
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone, specta::Type)]
+pub enum ZoneType {
+    KeepIn,
+    KeepOut,
+}
+
+#[taurpc::ipc_type]
+#[derive(Debug)]
+pub struct GeoCoordinateStruct {
+    pub lat: f64,
+    pub long: f64,
+}
+
+pub type GeofenceType = Vec<GeoCoordinateStruct>;
