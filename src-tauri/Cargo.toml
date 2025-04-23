@@ -8,13 +8,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 taurpc = "0.4.1"
 tokio = { version = "1.41.1", features = ["full"] }
-specta = { version = "=2.0.0-rc.9", features = ["export", "typescript"] }
-tauri = { version = "2.0.0-rc", features = [] }
+specta = { version = "=2.0.0-rc.22", features = ["export"] }
+tauri = { version = "2", features = [] }
 tauri-plugin-shell = "2.0.0"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.132"

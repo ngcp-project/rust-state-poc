@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use taurpc::Router;
+use tauri::Wry;
 use sqlx::postgres::PgConnection;
 use sqlx::Connection;
 
@@ -9,8 +10,8 @@ use sqlx::{query, Row};
 mod error;
 mod stores;
 
-use stores::counter::{CounterApiImpl, CounterApi};
-use stores::form::api::{FormApiImpl, FormApi};
+// use stores::counter::{CounterApiImpl, CounterApi};
+// use stores::form::api::{FormApiImpl, FormApi};
 use stores::mission::api::{MissionApiImpl, MissionApi};
 
 const DB_URL: &str = "postgres://ngcp:ngcp@localhost:5433/ngcpdb";
@@ -212,21 +213,21 @@ async fn init_database_dummy_data() {
 
 
 
-async fn setup_router() -> Router {
+async fn setup_router() -> Router<Wry> {
     // Initialize all the APIs here
 
     // use CounterApiImpl::new(initial_count) to set initial count
     // else use CounterApiImpl::default() to set initial count to 0
-    let counter_api = CounterApiImpl::default(); 
-    let form_api = FormApiImpl::default();
+    // let counter_api = CounterApiImpl::default(); 
+    // let form_api = FormApiImpl::default();
     // let mission_api = MissionApiImpl::new().await;
     let mission_api = MissionApiImpl::default();
         
     // let router = Router::new().merge(missions_api.into_handler());
     
     Router::new()
-        .merge(form_api.into_handler())
-        .merge(counter_api.into_handler())
+        // .merge(form_api.into_handler())
+        // .merge(counter_api.into_handler())
         .merge(mission_api.into_handler())
 }
 

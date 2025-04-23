@@ -59,13 +59,15 @@ impl CounterApiImpl {
 #[taurpc::procedures(
     event_trigger = CounterEventTrigger, // Define the event trigger for the counter api
     export_to = "../src/lib/bindings.ts",  // Export the API to the bindings file
-    path = "counter" // Namespace for the counter api
+    path = "counter", // Namespace for the counter api
 )]
+
 pub trait CounterApi {
     async fn increase(app_handle: AppHandle<Wry>) -> Result<(), String>;
 
     async fn get_data() -> CounterStore;
     async fn get_default_data() -> CounterStore;
+    
     #[taurpc(event)] // Define the on_updated method as an event for frontend to listen to
     async fn on_updated(new_data: CounterStore);
 }
