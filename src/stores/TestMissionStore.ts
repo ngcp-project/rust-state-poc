@@ -1,15 +1,14 @@
 import { createStore } from "zustand/vanilla";
-import { MissionInfoStruct, createTauRPCProxy } from "../lib/bindings";
+import { MissionStruct, createTauRPCProxy } from "../lib/bindings";
 
 
 // Create taurpc proxy
 const taurpc = await createTauRPCProxy();
 
 // // Define Zustand Store types
-interface TestMissionState extends MissionInfoStruct {
+interface TestMissionState extends MissionStruct {
   transitionNextStage: () => void;
 }
-
 
 const initialState: TestMissionState = await taurpc.mission.get_default_data();
 

@@ -26,7 +26,7 @@ export type ZoneType = "KeepIn" | "KeepOut"
 
 export type ZonesStruct = { keep_in_zones: GeoCoordinateStruct[][]; keep_out_zones: GeoCoordinateStruct[][] }
 
-const ARGS_MAP = { 'mission':'{"delete_mission":["mission_id"],"add_zone":["mission_id","zone_type"],"add_stage":["mission_id","vehicle_name","stage_name"],"transition_stage":["mission_id","vehicle_name"],"delete_zone":["mission_id","zone_type","zone_index"],"delete_stage":["mission_id","vehicle_name","stage_id"],"get_default_data":[],"rename_mission":["mission_id","mission_name"],"rename_stage":["mission_id","vehicle_name","stage_id","stage_name"],"get_all_missions":[],"get_mission_data":["mission_id"],"create_mission":["mission_name"],"set_auto_mode":["mission_id","vehicle_name","is_auto"],"on_updated":["new_data"]}' }
+const ARGS_MAP = { 'mission':'{"rename_mission":["mission_id","mission_name"],"get_all_missions":[],"on_updated":["new_data"],"set_auto_mode":["mission_id","vehicle_name","is_auto"],"add_stage":["mission_id","vehicle_name","stage_name"],"delete_stage":["mission_id","vehicle_name","stage_id"],"rename_stage":["mission_id","vehicle_name","stage_id","stage_name"],"get_mission_data":["mission_id"],"transition_stage":["mission_id","vehicle_name"],"add_zone":["mission_id","zone_type"],"get_default_data":[],"delete_zone":["mission_id","zone_type","zone_index"],"create_mission":["mission_name"],"delete_mission":["mission_id"]}' }
 export type Router = { 'mission': { on_updated: (newData: MissionsStruct) => Promise<void>, 
 get_default_data: () => Promise<MissionsStruct>, 
 get_all_missions: () => Promise<MissionsStruct>, 
