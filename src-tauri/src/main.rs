@@ -68,43 +68,190 @@ async fn init_database_dummy_data() {
 
     let _insert_dummy_discover_mra = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(discover_mission_id)
     .bind("MRA")
-    .bind(-1) 
-    .execute(&mut db_conn)
+    .bind(-1)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
     
-
+    let insert_dummy_discover_mra_id: i32 = _insert_dummy_discover_mra.get::<i32, _>("vehicle_id");
+    println!("Discover MRA Vehicle ID: {}", insert_dummy_discover_mra_id);
+    
     let _insert_dummy_discover_eru = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(discover_mission_id)
     .bind("ERU")
     .bind(-1)
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
 
+    let insert_dummy_discover_eru_id: i32 = _insert_dummy_discover_eru.get::<i32, _>("vehicle_id");
+    println!("Discover ERU Vehicle ID: {}", insert_dummy_discover_eru_id);
+
     let _insert_dummy_discover_mea = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(discover_mission_id)
     .bind("MEA")
     .bind(-1)
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
 
+    let insert_dummy_discover_mea_id: i32 = _insert_dummy_discover_mea.get::<i32, _>("vehicle_id");
+    println!("Discover MEA Vehicle ID: {}", insert_dummy_discover_mea_id);
+
+    let _insert_dummy_init_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_mra_id) 
+    .bind(&vec![
+        r#"[
+            (43.12876,-156.45231),
+            (-12.89354,67.23418),
+            (78.43219,-43.98765),
+            (-34.56789,142.87654),
+            (23.98765,-89.12345)
+        ]"#.to_string()
+    ])
+    .bind("Initial Stage")
+    .bind(r#"(37.33285,-122.34302)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
     
+    let _insert_dummy_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_mra_id)
+    .bind(&vec![
+        r#"[
+            (67.34521,-134.89276),
+            (-23.45678,88.12453),
+            (41.98732,-92.45681),
+            (-56.12398,167.34521),
+            (12.45678,-157.89012)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(45.67891,-98.76543)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+    
+    let _insert_dummy_third_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_mra_id) 
+    .bind(&vec![
+        r#"[
+            (-34.56789,123.45678),
+            (78.90123,-45.67890),
+            (12.34567,-167.89012),
+            (-67.89012,45.67890),
+            (23.45678,-134.56789)
+        ]"#.to_string()
+    ])
+    .bind("Third Stage")
+    .bind(r#"(-12.34567,145.67890)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    
+    let _insert_dummy_eru_init_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_eru_id)
+    .bind(&vec![
+        r#"[
+            (54.23451,-123.45612),
+            (-15.78901,89.34567),
+            (82.12345,-67.89012),
+            (-45.67890,156.78901),
+            (31.23456,-145.67890)
+        ]"#.to_string()
+    ])
+    .bind("init")
+    .bind(r#"(42.56789,-134.23456)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+    
+    let _insert_dummy_eru_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_eru_id)
+    .bind(&vec![
+        r#"[
+            (76.45678,-178.90123),
+            (-34.56789,112.34567),
+            (23.45678,-89.01234),
+            (-67.89012,145.67890),
+            (45.67890,-123.45678)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(56.78901,-167.89012)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+    
+    // Stages for MEA (vehicle_id = 3)
+    let _insert_dummy_mea_init_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_mea_id)
+    .bind(&vec![
+        r#"[
+            (65.43210,-145.67890),
+            (-28.90123,134.56789),
+            (43.21098,-78.90123),
+            (-56.78901,167.89012),
+            (34.56789,-112.34567)
+        ]"#.to_string()
+    ])
+    .bind("init")
+    .bind(r#"(51.23456,-156.78901)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+    
+    let _insert_dummy_mea_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_discover_mea_id)
+    .bind(&vec![
+        r#"[
+            (71.23456,-167.89012),
+            (-45.67890,123.45678),
+            (34.56789,-145.67890),
+            (-78.90123,178.90123),
+            (23.45678,-134.56789)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(67.89012,-178.90123)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
 
 
-
-
+    // NEW MISSION INSERTION
 
     let _insert_dummy_retrieve_mission = query("
         INSERT INTO missions(mission_name, keep_in_zones, keep_out_zones, status) 
@@ -153,38 +300,208 @@ async fn init_database_dummy_data() {
 
     let _insert_dummy_retrieve_mra = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(retrieve_mission_id)
     .bind("MRA")
     .bind(-1)
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
+
+    let insert_dummy_retrieve_mra_id: i32 = _insert_dummy_retrieve_mra.get::<i32, _>("vehicle_id");
+    println!("Retrieve MRA Vehicle ID: {}", insert_dummy_retrieve_mra_id);
 
       
     let _insert_dummy_retrieve_eru = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(retrieve_mission_id)
     .bind("ERU")
     .bind(-1)
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
 
+    let insert_dummy_retrieve_eru_id: i32 = _insert_dummy_retrieve_eru.get::<i32, _>("vehicle_id");
+    println!("Retrieve ERU Vehicle ID: {}", insert_dummy_retrieve_eru_id);
+
+    
+
     let _insert_dummy_retrieve_mea = query("
         INSERT INTO vehicles(mission_id, vehicle_name, current_stage_id)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3) RETURNING vehicle_id
     ")
     .bind(retrieve_mission_id)
     .bind("MEA")
     .bind(-1)
-    .execute(&mut db_conn)
+    .fetch_one(&mut db_conn)
     .await
     .expect("Failed to insert dummy data into vehicles");
     
+    let insert_dummy_retrieve_mea_id: i32 = _insert_dummy_retrieve_mea.get::<i32, _>("vehicle_id");
+    println!("Retrieve MEA Vehicle ID: {}", insert_dummy_retrieve_mea_id);
+
+    let _insert_dummy_retrieve_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mra_id)
+    .bind(&vec![
+        r#"[
+            (12.34567,-78.90123),
+            (-45.67890,123.45678),
+            (34.56789,-145.67890),
+            (-78.90123,178.90123),
+            (23.45678,-134.56789)
+        ]"#.to_string()
+    ])
+    .bind("Initial Stage")
+    .bind(r#"(5.23657,-68.74629)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_retrieve_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mra_id)
+    .bind(&vec![
+        r#"[
+            (67.89012,-123.45678),
+            (-34.56789,112.34567),
+            (23.45678,-89.01234),
+            (-67.89012,145.67890),
+            (45.67890,-123.45678)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(49.23849,-87.15234)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_retrieve_third_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mra_id)
+    .bind(&vec![
+        r#"[
+            (78.90123,-45.67890),
+            (12.34567,-167.89012),
+            (-67.89012,45.67890),
+            (23.45678,-134.56789),
+            (-34.56789,123.45678)
+        ]"#.to_string()
+    ])
+    .bind("Third Stage")
+    .bind(r#"(-12.34567,145.67890)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_eru_init_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_eru_id)
+    .bind(&vec![
+        r#"[
+            (54.23451,-123.45612),
+            (-15.78901,89.34567),
+            (82.12345,-67.89012),
+            (-45.67890,156.78901),
+            (31.23456,-145.67890)
+        ]"#.to_string()
+    ])
+    .bind("init")
+    .bind(r#"(42.56789,-134.23456)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_eru_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_eru_id)
+    .bind(&vec![
+        r#"[
+            (76.45678,-178.90123),
+            (-34.56789,112.34567),
+            (23.45678,-89.01234),
+            (-67.89012,145.67890),
+            (45.67890,-123.45678)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(56.78901,-167.89012)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_mea_init_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mea_id)
+    .bind(&vec![
+        r#"[
+            (65.43210,-145.67890),
+            (-28.90123,134.56789),
+            (43.21098,-78.90123),
+            (-56.78901,167.89012),
+            (34.56789,-112.34567)
+        ]"#.to_string()
+    ])
+    .bind("init")
+    .bind(r#"(51.23456,-156.78901)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_mea_second_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mea_id)
+    .bind(&vec![
+        r#"[
+            (71.23456,-167.89012),
+            (-45.67890,123.45678),
+            (34.56789,-145.67890),
+            (-78.90123,178.90123),
+            (23.45678,-134.56789)
+        ]"#.to_string()
+    ])
+    .bind("Second Stage")
+    .bind(r#"(67.89012,-178.90123)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
+
+    let _insert_dummy_mea_third_stage = query("
+        INSERT INTO stages(vehicle_id, search_area, stage_name, target_coordinate)
+        VALUES ($1, $2, $3, $4)
+    ")
+    .bind(insert_dummy_retrieve_mea_id)
+    .bind(&vec![
+        r#"[
+            (78.90123,-45.67890),
+            (12.34567,-167.89012),
+            (-67.89012,45.67890),
+            (23.45678,-134.56789),
+            (-34.56789,123.45678)
+        ]"#.to_string()
+    ])
+    .bind("Third Stage")
+    .bind(r#"(-12.34567,145.67890)"#.to_string())
+    .execute(&mut db_conn)
+    .await
+    .expect("Failed to insert dummy data into stages");
 
     // let test_result = query("
     //     SELECT * FROM missions WHERE mission_name = $1
